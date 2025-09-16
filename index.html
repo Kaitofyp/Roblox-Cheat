@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Linkvertise Hash Verifier</title>
+</head>
+<body>
+  <h1>Linkvertise Anti-Bypass Test</h1>
+
+  <label for="hash">Enter Hash:</label>
+  <input type="text" id="hash" placeholder="Paste ?hash value here" size="70">
+  <button onclick="verify()">Verify</button>
+
+  <pre id="output"></pre>
+
+  <script>
+    const TOKEN = "YOUR_AUTH_TOKEN_HERE"; // replace with your token
+
+    async function verify() {
+      const hash = document.getElementById("hash").value;
+      const url = "https://publisher.linkvertise.com/api/v1/anti_bypassing";
+
+      const body = new URLSearchParams({
+        token: TOKEN,
+        hash: hash
+      });
+
+      try {
+        const response = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          body: body.toString()
+        });
+
+        const result = await response.json();
+        document.getElementById("output").textContent = JSON.stringify(result, null, 2);
+      } catch (err) {
+        document.getElementById("output").textContent = "Error: " + err;
+      }
+    }
+  </script>
+</body>
+</html>
