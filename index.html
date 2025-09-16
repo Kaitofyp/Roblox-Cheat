@@ -1,43 +1,86 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Linkvertise Hash Verifier</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      background: #f5f5f5;
+      color: #333;
+    }
+    h1 {
+      color: #2c3e50;
+    }
+    input, button {
+      padding: 10px;
+      margin-top: 10px;
+      font-size: 16px;
+    }
+    button {
+      cursor: pointer;
+      background: #3498db;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+    button:hover {
+      background: #2980b9;
+    }
+    pre {
+      background: #1e1e1e;
+      color: #00ff9d;
+      padding: 15px;
+      border-radius: 5px;
+      margin-top: 20px;
+      white-space: pre-wrap;
+    }
+  </style>
 </head>
 <body>
-  <h1>Linkvertise Anti-Bypass Test</h1>
+  <h1>🔑 Linkvertise Anti-Bypass Test</h1>
+  <p>Enter the <b>?hash</b> from your Linkvertise link to verify it:</p>
 
-  <label for="hash">Enter Hash:</label>
   <input type="text" id="hash" placeholder="Paste ?hash value here" size="70">
+  <br>
   <button onclick="verify()">Verify</button>
 
-  <pre id="output"></pre>
+  <pre id="output">Response will appear here...</pre>
 
   <script>
-    const TOKEN = "315fa403eaad351423e9949f78da2ed233456fb588cc10b707c5fd86b32f9d65"; // replace with your token
+    // ⚠️ Your token goes here (it will be visible in the source code!)
+    const TOKEN = "YOUR_AUTH_TOKEN_HERE";
+
+    // Restore last saved hash
+    document.getElementById("hash").value = localStorage.getItem("lastHash") || "";
 
     async function verify() {
-      const hash = document.getElementById("hash").value;
-      const url = "https://publisher.linkvertise.com/api/v1/anti_bypassing";
+      const hash = document.getElementById("hash").value.trim();
+      if (!hash) {
+        document.getElementById("output").textContent = "⚠️ Please enter a hash first.";
+        return;
+      }
 
-      const body = new URLSearchParams({
-        token: TOKEN,
-        hash: hash
-      });
+      // Save hash to LocalStorage
+      localStorage.setItem("lastHash", hash);
+
+      const url = "https://publisher.linkvertise.com/api/v1/anti_bypassing";
+      const body = new URLSearchParams({ token: TOKEN, hash });
+
+      document.getElementById("output").textContent = "⏳ Verifying...";
 
       try {
         const response = await fetch(url, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-          },
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
           body: body.toString()
         });
 
         const result = await response.json();
         document.getElementById("output").textContent = JSON.stringify(result, null, 2);
       } catch (err) {
-        document.getElementById("output").textContent = "Error: " + err;
+        document.getElementById("output").textContent = "❌ Error: " + err;
       }
     }
   </script>
